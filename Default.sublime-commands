@@ -1,0 +1,18 @@
+[
+    {
+        "caption": "URL Encode",
+        "command": "urlencode"
+    },
+   	{
+        "caption": "URL Decode",
+        "command": "urldecode"
+    },
+   	{
+        "caption": "URL Parse",
+        "command": "urlparse"
+    },
+   	{
+        "caption": "URL Response",
+        "command": "urlresponse"
+    }
+]
