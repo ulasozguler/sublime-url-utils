@@ -8,6 +8,7 @@ from urllib.parse import urlparse, parse_qsl
 
 def selections(view):
     # get selected text regions or all text region if none selected
+    # from: https://github.com/mastahyeti/URLEncode/blob/master/urlencode.py#L24
     regions = [r for r in view.sel() if not r.empty()]
 
     if not regions:
