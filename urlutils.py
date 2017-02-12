@@ -31,7 +31,7 @@ class ReplaceCommand(sublime_plugin.TextCommand):
             original_str = view.substr(region)
             processed_str = self.process(original_str)
             drift += len(processed_str) - len(original_str)
-            view.replace(edit, region, processed_str + '\n')
+            view.replace(edit, region, processed_str)
 
 
 class UrlencodeCommand(ReplaceCommand):
