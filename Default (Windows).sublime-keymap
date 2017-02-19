@@ -1,4 +1,4 @@
 [
-    {"keys": ["ctrl+alt+e"], "command": "urlencode"},
-    {"keys": ["ctrl+alt+d"], "command": "urldecode"}
+    {"keys": ["ctrl+alt+shift+e"], "command": "urlencode"},
+    {"keys": ["ctrl+alt+shift+d"], "command": "urldecode"}
 ]
