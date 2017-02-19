@@ -17,7 +17,7 @@ def selections(view):
     return regions
 
 
-class ReplaceCommand(sublime_plugin.TextCommand):
+class ReplaceCommandBase(sublime_plugin.TextCommand):
     @staticmethod
     def process(s):
         raise Exception('`process` method is missing.')
@@ -34,15 +34,15 @@ class ReplaceCommand(sublime_plugin.TextCommand):
             view.replace(edit, region, processed_str)
 
 
-class UrlencodeCommand(ReplaceCommand):
+class UrlencodeCommand(ReplaceCommandBase):
     process = staticmethod(lambda s: urllib.parse.quote(s, safe='\r\n'))
 
 
-class UrldecodeCommand(ReplaceCommand):
+class UrldecodeCommand(ReplaceCommandBase):
     process = staticmethod(lambda s: urllib.parse.unquote(s.replace('+', ' ')))
 
 
-class UrlparseCommand(ReplaceCommand):
+class UrlparseCommand(ReplaceCommandBase):
     @staticmethod
     def _query_parse(val):
         lines = []
@@ -76,7 +76,7 @@ class UrlparseCommand(ReplaceCommand):
         return '\n'.join(lines).strip()
 
 
-class UrlresponseCommand(ReplaceCommand):
+class UrlresponseCommand(ReplaceCommandBase):
     @staticmethod
     def process(s):
         with urllib.request.urlopen(s) as response:
