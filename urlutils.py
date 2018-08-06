@@ -54,7 +54,7 @@ class UrlparseCommand(ParseCommandBase):
     @staticmethod
     def _query_parse(val):
         lines = []
-        query = dict(parse_qsl(val))
+        query = dict(parse_qsl(val, keep_blank_values=True))
         max_key_len = max(map(len, query.keys())) + 3
         for k, v in sorted(query.items()):
             lines.append('{key} : {val}'.format(key=k.rjust(max_key_len, ' '), val=v))
