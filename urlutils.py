@@ -3,7 +3,7 @@ import urllib
 import sublime
 import sublime_plugin
 import urllib.request
-from urllib.parse import urlparse, parse_qsl
+from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
 
 def selections(view):
@@ -42,7 +42,15 @@ class UrldecodeCommand(ReplaceCommandBase):
     process = staticmethod(lambda s: urllib.parse.unquote(s.replace('+', ' ')))
 
 
-class UrlparseCommand(ReplaceCommandBase):
+class ParseCommandBase(ReplaceCommandBase):
+    url_parts = ['scheme', 'netloc', 'path', 'params', 'query', 'fragment']
+
+    def header_format(f):
+        return '\n' + (' ' + f + ' ').center(75, '-') + '\n'
+
+
+class UrlparseCommand(ParseCommandBase):
+
     @staticmethod
     def _query_parse(val):
         lines = []
@@ -53,18 +61,18 @@ class UrlparseCommand(ReplaceCommandBase):
         return lines
 
     @staticmethod
-    def process(s):
+    def _parse(s):
         parsed = urlparse(s)
 
         lines = []
-        for f in ['scheme', 'netloc', 'path', 'params', 'query', 'fragment']:
+        for f in ParseCommandBase.url_parts:
             # skip empty vals
             val = getattr(parsed, f)
             if not val:
                 continue
 
             # header
-            lines.append('\n' + (' ' + f + ' ').center(75, '-') + '\n')
+            lines.append(ParseCommandBase.header_format(f))
 
             # key-vals
             if f == 'query':
@@ -74,6 +82,39 @@ class UrlparseCommand(ReplaceCommandBase):
 
         lines = [UrldecodeCommand.process(x) for x in lines]
         return '\n'.join(lines).strip()
+
+    @staticmethod
+    def process(s):
+        return UrlparseCommand._parse(s)
+
+
+class UrlunparseCommand(ParseCommandBase):
+    @staticmethod
+    def _query_unparse(parsed_val):
+        return urlencode(
+            [(kv.split(' : ')[0].strip(), kv.split(' : ')[1])
+             for kv in parsed_val.split('\n')]
+        )
+
+    @staticmethod
+    def _unparse(s):
+        found_parts = []
+        found_values = [s]
+        for url_part in ParseCommandBase.url_parts:
+            header = ParseCommandBase.header_format(url_part).strip()
+            if header in s:
+                found_parts.append(url_part)
+                found_values = found_values[0:-1] + found_values[-1].split(header)
+
+        parsed_kv = dict(zip(found_parts, [val.strip('\n\r') for val in found_values[1:]]))
+        parsed_kv['query'] = UrlunparseCommand._query_unparse(parsed_kv['query'])
+
+        return urlunparse([parsed_kv.get(url_part, '')
+                           for url_part in ParseCommandBase.url_parts])
+
+    @staticmethod
+    def process(s):
+        return UrlunparseCommand._unparse(s)
 
 
 class UrlresponseCommand(ReplaceCommandBase):

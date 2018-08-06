@@ -11,6 +11,10 @@
         "caption": "URL Parse",
         "command": "urlparse"
     },
+    {
+        "caption": "URL Unparse",
+        "command": "urlunparse"
+    },
    	{
         "caption": "URL Response",
         "command": "urlresponse"
